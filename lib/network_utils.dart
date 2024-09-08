@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:http_parser/http_parser.dart';
 
-Future<String> uploadImage(FilePickerResult result) async {
+Future<String> uploadImage(FilePickerResult result, Function callback) async {
 
   if (result.files.isNotEmpty) {
     Uint8List? fileBytes = result.files.first.bytes;
@@ -36,15 +36,19 @@ Future<String> uploadImage(FilePickerResult result) async {
       String imageUrl = responseData['location'];
       print('Upload successful: Image URL is $imageUrl');
 
+      callback.call(true);
+
       // Save the image URL (you can save it locally, in memory, or a database)
       // For example, you can store it in a variable or shared preferences
       return imageUrl;
       print("Image URL saved: $imageUrl");
     } else {
+      callback.call(false);
       return "";
       print('Upload failed with status: ${response.statusCode}');
     }
   } else {
+    callback.call(false);
     return "";
     print('No image selected.');
   }
